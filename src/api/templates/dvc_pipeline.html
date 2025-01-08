@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+<body>
+    {% block app_content %}
+    <div class="container d-flex flex-column align-items-center">
+
+
+          <!-- Try Again Button -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <button id="dvcButton" class="btn btn-secondary btn-lg px-5 py-3">
+                    Run dvc pipeline
+                </button>
+            </div>
+        </div>
+
+    </div>
+    {% endblock %}
+
+    {% block scripts %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    // Redirect to the upload page on "Try Again" button click
+    $('#dvcButton').on('click', function() {
+        window.location.href = "{{ url_for('run_dvc_pipeline') }}";
+    });
+    </script>
+    {% endblock %}
+</body>

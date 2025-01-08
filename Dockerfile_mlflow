@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+# Install MLflow, boto3, and curl
+RUN apt-get update && apt-get install -y curl && pip install --no-cache-dir mlflow boto3 psycopg2-binary
+
+# Expose the default MLflow port
+EXPOSE 5000
+
+# Command to start the MLflow server
+CMD ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]

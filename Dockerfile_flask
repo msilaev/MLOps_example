@@ -1,0 +1,18 @@
+# filepath: /c:/Users/mikes/Documents/STUDY/MLOps/sentiment_analysis/Dockerfile_flask
+# Use the base image
+FROM base_image:latest
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy all files from the current directory to /app in the container
+COPY ./ /app
+
+# Set the FLASK_APP environment variable to point to the correct app module
+ENV FLASK_APP=src/api/app.py
+
+# Expose the port the app runs on
+EXPOSE 5001
+
+# Run the application
+CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5001"]

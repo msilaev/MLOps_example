@@ -1,0 +1,70 @@
+stages:
+  prepare_dataset:
+    cmd: python src/prepare_dataset.py params.yaml
+    deps:
+    - src/prepare_dataset.py
+    - src/preprocess_data.py
+    - params.yaml
+    params:
+    - base.random_state
+    - data_source.local_path
+    - split.split_ratio
+    outs:
+    - data/processed/test_data.csv
+    - data/processed/total_data.csv
+    - data/processed/train_data.csv
+    - data/processed/val_data.csv
+
+  train:
+    cmd: python src/train.py params.yaml
+    deps:
+    - data/processed
+    - src/train.py
+    params:
+    - base.random_state
+    - base.target_col
+    - train.model_dir
+    outs:
+    - models/model.joblib
+    - models/vectorizer.joblib
+
+  evaluate:
+    cmd: python src/evaluate.py params.yaml
+    deps:
+      - src/evaluate.py
+      - models/model.joblib
+      - models/vectorizer.joblib
+      - data/processed/test_data.csv
+      - params.yaml
+    outs:
+      - eval/live/plots:
+          cache: false
+      - eval/prc:
+          cache: false
+    metrics:
+      - eval/live/metrics.json:
+          cache: false
+
+  predict:
+    cmd: python src/predict.py params.yaml
+    deps:
+    - src/predict.py
+    - models/model.joblib
+    - models/vectorizer.joblib
+
+plots:
+- ROC:
+    template: simple
+    x: fpr
+    y:
+      eval/live/plots/sklearn/roc/test.json: tpr
+- Confusion-Matrix:
+    template: confusion
+    x: actual
+    y:
+      eval/live/plots/sklearn/cm/test.json: predicted
+- Precision-Recall:
+    template: simple
+    x: recall
+    y:
+      eval/prc/test.json: precision

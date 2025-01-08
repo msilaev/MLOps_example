@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block app_content %}
+<div class="container d-flex flex-column align-items-center">
+
+    <div class="row mt-1">
+        <div class="col-md-12">
+            <h2>Upload Text for Sentiment Analysis</h2>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <div class="row mt-1">
+            <div class="col-md-12">
+                <input type="text" name="text" id="textInput" placeholder="Enter your text here" class="form-control">
+            </div>
+        </div>
+
+        <div class="row mt-1">
+            <div class="col-md-12">
+                <input type="submit" value="Upload" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+
+    <div id="errorMessage" style="display: none; color: red;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+   function validateForm() {
+       var textInput = document.getElementById('textInput').value.trim();
+
+       if (textInput.length === 0) {
+           var errorMessage = document.getElementById('errorMessage');
+           errorMessage.textContent = "Please enter text.";
+           errorMessage.style.display = "block";
+           return false;  // Prevent form submission
+       }
+
+       // Hide error message if validation passes
+       document.getElementById('errorMessage').style.display = "none";
+       return true;  // Allow form submission
+   }
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+# filepath: /c:/Users/mikes/Documents/STUDY/MLOps/sentiment_analysis/Dockerfile_dvc
+# Use the base image
+FROM base_image:latest
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy all files from the current directory to /app in the container
+COPY ./ /app
+
+# Install Git and DVC
+RUN apt-get update && apt-get install -y git
+RUN pip install dvc
+
+# Initialize Git repository
+RUN git init
+RUN dvc init --no-scm --force
+
+# Copy the Git configuration files into the container
+#COPY .git .git
+
+# Copy the DVC configuration files into the container
+#COPY .dvc .dvc
+COPY dvc.yaml dvc.yaml
+COPY params.yaml params.yaml
+
+# Set environment variables for AWS credentials
+# Set build arguments for AWS credentials
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+# Set up the DVC remote configuration
+RUN dvc remote add -d myremote s3://example1917/dvc_remote --force
+RUN dvc remote modify myremote access_key_id ${AWS_ACCESS_KEY_ID}
+RUN dvc remote modify myremote secret_access_key ${AWS_SECRET_ACCESS_KEY}
+
+# Run the DVC pipeline to pull data from the remote storage
+#RUN echo "AWS Access Key ID: $AWS_ACCESS_KEY_ID" && echo "AWS Secret Access Key: $AWS_SECRET_ACCESS_KEY"
+
+#RUN dvc pull -r myremote --force
+
+# Command to keep the container running
+CMD ["tail", "-f", "/dev/null"]

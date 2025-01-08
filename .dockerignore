@@ -1,0 +1,28 @@
+# Ignore virtual environments
+.venv/
+env/
+*.pyc
+__pycache__/
+
+# Ignore version control directories
+
+.gitignore
+.git/
+.dvc/
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore log files and temp directories
+*.log
+tmp/
+
+# Ignore build artifacts and caches
+build/
+dist/
+*.tar.gz
+*.zip
+
+# Ignore local configuration files
+*.local

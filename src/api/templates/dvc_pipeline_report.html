@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+<body>
+    {% block app_content %}
+    <div class="container d-flex flex-column align-items-center">
+
+        <div class="row mt-1">
+            <div class="col-md-12">
+                <h2>Dvc pipeline has run sucessfully</h2>
+            </div>
+        </div>
+
+        <!-- Try Again Button -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <button id="startoverButton" class="btn btn-secondary btn-lg px-5 py-3">
+                    Try Again
+                </button>
+            </div>
+        </div>
+
+        <!-- Try Again Button -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <button id="sentimentanButton" class="btn btn-secondary btn-lg px-5 py-3">
+                    Analyse Sentiment
+                </button>
+            </div>
+        </div>
+
+    </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Redirect to the upload page on "Try Again" button click
+        $('#sentimentanButton').on('click', function() {
+            window.location.href = "{{ url_for('text_upload') }}";
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    // Redirect to the upload page on "Try Again" button click
+    $('#startoverButton').on('click', function() {
+        window.location.href = "{{ url_for('run_dvc_pipeline') }}";
+    });
+    </script>
+    {% endblock %}
+</body>

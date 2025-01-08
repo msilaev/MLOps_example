@@ -1,0 +1,163 @@
+schema: '2.0'
+stages:
+  data_split:
+    cmd: python src/data_split.py params.yaml
+    deps:
+    - path: src/data_split.py
+      hash: md5
+      md5: b13ba7d692462c6bc40c2fc33386624b
+      size: 1251
+    params:
+      params.yaml:
+        base.random_state: 42
+        data_source.local_path: data/data.csv
+        split.split_ratio: 0.2
+    outs:
+    - path: data/split
+      hash: md5
+      md5: 8244fc760f52fd595ce0116359dbd9fc.dir
+      size: 66262328
+      nfiles: 2
+  prepare_dataset:
+    cmd: python src/prepare_dataset.py params.yaml
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 6ed123e43f503cd827474d6e5c93e34e
+      size: 808
+      isexec: true
+    - path: src/prepare_dataset.py
+      hash: md5
+      md5: 0a88887d3b3febf519f83553d8f666cf
+      size: 2574
+      isexec: true
+    - path: src/preprocess_data.py
+      hash: md5
+      md5: 46b54f3291cabd59396bd0e577cd6d95
+      size: 3411
+      isexec: true
+    params:
+      params.yaml:
+        base.random_state: 44
+        data_source.local_path: data/data.csv
+        split.split_ratio: 0.8
+    outs:
+    - path: data/processed/test_data.csv
+      hash: md5
+      md5: 3807c551c935745ae0d101c644a7b4c5
+      size: 412653
+    - path: data/processed/total_data.csv
+      hash: md5
+      md5: 7db0af388b405bd301edad0d83871de3
+      size: 4184509
+    - path: data/processed/train_data.csv
+      hash: md5
+      md5: ea0328d145052c0ba9256ae2d76a6aba
+      size: 3342357
+    - path: data/processed/val_data.csv
+      hash: md5
+      md5: ae5148bbb4818af99734a58482840a28
+      size: 429527
+  train:
+    cmd: python src/train.py params.yaml
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 0130362e0ee4fc681747d869ddffd484.dir
+      size: 8369046
+      nfiles: 4
+    - path: src/train.py
+      hash: md5
+      md5: 480412cf63a09d12ebda2a86d5f5be70
+      size: 5585
+      isexec: true
+    params:
+      params.yaml:
+        base.random_state: 44
+        base.target_col: target
+        train.model_dir: models
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: da21360a2abb53a032c54762ead5d7b9
+      size: 8634683
+    - path: models/vectorizer.joblib
+      hash: md5
+      md5: 4870c4a0e665dae0e369d9150b43bdd6
+      size: 26572354
+  predict:
+    cmd: python src/predict.py params.yaml
+    deps:
+    - path: models/model.joblib
+      hash: md5
+      md5: da21360a2abb53a032c54762ead5d7b9
+      size: 8634683
+    - path: models/vectorizer.joblib
+      hash: md5
+      md5: 4870c4a0e665dae0e369d9150b43bdd6
+      size: 26572354
+    - path: src/predict.py
+      hash: md5
+      md5: 0b7fba32e758506db07a01bbdc4465f6
+      size: 3032
+      isexec: true
+  evaluate:
+    cmd: python src/evaluate.py params.yaml
+    deps:
+    - path: data/processed/test_data.csv
+      hash: md5
+      md5: 3807c551c935745ae0d101c644a7b4c5
+      size: 412653
+    - path: models/model.joblib
+      hash: md5
+      md5: da21360a2abb53a032c54762ead5d7b9
+      size: 8634683
+    - path: models/vectorizer.joblib
+      hash: md5
+      md5: 4870c4a0e665dae0e369d9150b43bdd6
+      size: 26572354
+    - path: params.yaml
+      hash: md5
+      md5: 6ed123e43f503cd827474d6e5c93e34e
+      size: 808
+      isexec: true
+    - path: src/evaluate.py
+      hash: md5
+      md5: 32028508b523c512fe78b1f227211751
+      size: 3847
+      isexec: true
+    outs:
+    - path: eval/live/metrics.json
+      hash: md5
+      md5: 635015e5fe8d3f6f62c5500540363ed7
+      size: 122
+    - path: eval/live/plots
+      hash: md5
+      md5: d5dd1f337241927bc35fabc8a3d2d8dd.dir
+      size: 30855
+      nfiles: 2
+    - path: eval/prc
+      hash: md5
+      md5: 8b6b4d6bf14b72a7921f325f0428e3fb.dir
+      size: 420
+      nfiles: 1
+  register_model:
+    cmd: python src/register_model.py params.yaml
+    deps:
+    - path: models/model.joblib
+      hash: md5
+      md5: 6a3c92662b889578f8d8eab14c6e1219
+      size: 8847243
+    - path: models/vectorizer.joblib
+      hash: md5
+      md5: 98389de4d57d7bceea46095e89ee50e6
+      size: 27260164
+    - path: src/register_model.py
+      hash: md5
+      md5: 103c6b9de5288baa9229cde257d4f2f9
+      size: 2394
+      isexec: true
+    params:
+      params.yaml:
+        train.model_dir: models
+        train.model_file: model.joblib

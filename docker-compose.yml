@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile_flask
+    container_name: flask_app
+    environment:
+      FLASK_APP: src/api/app.py
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      MLFLOW_TRACKING_URI: http://mlflow_server:5000  # Use the service name to connect to MLflow
+    volumes:
+      - .:/app
+      - mlflow_data:/mlflow  # Mount the same volume as mlflow service
+    ports:
+      - "5001:5001"  # Expose Flask app on port 5001
+    depends_on:
+      mlflow:
+        condition: service_started  # Ensure MLflow is healthy before starting Flask
+      dvc:
+        condition: service_started  # Ensure DVC is started before Flask
+
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile_mlflow  # Use a specific Dockerfile for MLflow
+    ports:
+      - "5000:5000"
+    container_name: mlflow_server
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      MLFLOW_BACKEND_STORE_URI: sqlite:///mlflow/mlflow.db
+      MLFLOW_ARTIFACT_ROOT: s3://example1917/mlflow-artifacts
+      MLFLOW_TRACKING_URI: http://mlflow_server:5000
+    volumes:
+      - mlflow_data:/mlflow  # Persist MLflow data
+    restart: always  # Automatically restart MLflow if it stops
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root s3://example1917/mlflow-artifacts
+      --host 0.0.0.0
+      --port 5000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+
+      # --backend-store-uri sqlite:///mlflow/mlflow.db
+      #  --default-artifact-root file:///mlflow
+      # --backend-store-uri s3://example1917/mlflow-backend
+      # --backend-store-uri ${MLFLOW_BACKEND_STORE_URI}
+      # MLFLOW_BACKEND_STORE_URI: sqlite:///mlflow/mlflow.db
+      # MLFLOW_BACKEND_STORE_URI: postgresql+psycopg2://${MLFLOW_DB_USER}:${MLFLOW_DB_PASSWORD}@${MLFLOW_DB_HOST}:5432/${MLFLOW_DB_NAME}
+      # --backend-store-uri postgresql+psycopg2://${MLFLOW_DB_USER}:${MLFLOW_DB_PASSWORD}@${MLFLOW_DB_HOST}:5432/${MLFLOW_DB_NAME}
+  dvc:
+    build:
+      context: .
+      dockerfile: Dockerfile_dvc  # Use a specific Dockerfile for DVC
+      args:
+        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    container_name: dvc_service
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      MLFLOW_TRACKING_URI: http://mlflow_server:5000
+    volumes:
+      - .:/app
+      - mlflow_data:/mlflow  # Mount the same volume as mlflow service
+    command: >
+      sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
+
+volumes:
+  mlflow_data:
