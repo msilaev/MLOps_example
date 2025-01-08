@@ -1,0 +1,66 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+        ports:
+          - 5000:5000
+          - 5001:5001
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      MLFLOW_DB_USER: ${{ secrets.MLFLOW_DB_USER }}
+      MLFLOW_DB_PASSWORD: ${{ secrets.MLFLOW_DB_PASSWORD }}
+      MLFLOW_TRACKING_URI: http://localhost:5000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose up --build -d
+
+      - name: Run DVC pipeline
+        run: |
+          docker-compose exec dvc_service dvc repro
+
+      - name: Run tests
+        run: |
+          docker-compose exec flask_app pytest
+
+      - name: Run flake8 linter
+        run: |
+          docker-compose exec flask_app flake8 .
+
+      - name: Run black linter
+        run: |
+          docker-compose exec flask_app black . --check
+
+      - name: Stop Docker Compose
+        run: |
+          docker-compose down
