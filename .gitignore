@@ -67,3 +67,4 @@ data/*
 *.joblib
 
 .env
+*.pem

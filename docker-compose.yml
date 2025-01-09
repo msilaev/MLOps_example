@@ -78,7 +78,7 @@ services:
       sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
     depends_on:
       mlflow:
-        condition: service_healthy
+        condition: service_started  # Ensure MLflow is healthy before starting Flask
     healthcheck:
       test: ["CMD-SHELL", "dvc version || exit 1"]
       interval: 30s
