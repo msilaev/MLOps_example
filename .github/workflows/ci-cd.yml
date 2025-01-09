@@ -41,6 +41,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Build base image
+        run: |
+          docker build -f Dockerfile_base -t base_image:latest .
+
       - name: Configure DVC remote
         run: |
           dvc remote add -d myremote s3://example1917/dvc_remote
