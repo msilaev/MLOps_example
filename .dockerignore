@@ -26,3 +26,6 @@ dist/
 
 # Ignore local configuration files
 *.local
+
+# Ignore dataset files
+*.csv

@@ -20,7 +20,22 @@ class PredictSentiment:
             params_yaml["train"]["vectorizer_file"],
         )
 
+        # Define the model path
+        self.model_path = os.path.join(
+            root_path,  # Ensure the base path is correct within the container
+            params_yaml["train"]["model_dir"],
+            params_yaml["train"]["model_file"],
+        )
+
+        # Define the model path
+        # vectorizer_path = os.path.join(
+        #    "/app",  # Ensure the base path is correct within the container
+        #    params_yaml["train"]["model_dir"],
+        #    params_yaml["train"]["vectorizer_file"],
+        # )
+
         self.model_uri = "models:/SentimentAnalysisModel/Production"
+        self.model_uri = "models:/SentimentAnalysisModel/26"
 
     def preprocess(self, text_data):
         text_data = preprocess_text(text_data)
@@ -35,10 +50,13 @@ class PredictSentiment:
         mlflow.set_tracking_uri(
             os.getenv("MLFLOW_TRACKING_URI", "http://mlflow_server:5000")
         )
-        self.model = mlflow.pyfunc.load_model(self.model_uri)
+        # self.model = mlflow.pyfunc.load_model(self.model_uri)
 
         self.artifact_path = mlflow.artifacts.download_artifacts(self.vectorizer_path)
-        self.vectorizer = joblib.load(self.artifact_path)
+        # self.vectorizer = joblib.load(self.artifact_path)
+
+        self.vectorizer = joblib.load(self.vectorizer_path)
+        self.model = joblib.load(self.model_path)
 
         preprocessed_data = self.preprocess(text)
         # print(preprocessed_data)

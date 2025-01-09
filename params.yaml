@@ -3,7 +3,7 @@ data_source:
   s3_path: s3://example1917/IMDB_Dataset.csv
 
 base:
-  random_state: 44
+  random_state: 43
   target_col: target
 
 split:
@@ -13,7 +13,7 @@ split:
   test_file: test_data.csv
   val_file: val_data.csv
   split_ratio: 0.8
-  trim_step: 10
+  trim_step: 5
 
 metadata:
   dir: data/metadata

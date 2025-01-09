@@ -48,11 +48,25 @@ class PredictSentiment:
         with open(param_yaml_path) as f:
             params_yaml = yaml.safe_load(f)
 
+        # model_path = os.path.join(
+        #    params_yaml["train"]["model_dir"], params_yaml["train"]["model_file"]
+        # )
+        # vectorizer_path = os.path.join(
+        #    params_yaml["train"]["model_dir"], params_yaml["train"]["vectorizer_file"]
+        # )
+
+        # Define the model path
         model_path = os.path.join(
-            params_yaml["train"]["model_dir"], params_yaml["train"]["model_file"]
+            "/app",  # Ensure the base path is correct within the container
+            params_yaml["train"]["model_dir"],
+            params_yaml["train"]["model_file"],
         )
+
+        # Define the model path
         vectorizer_path = os.path.join(
-            params_yaml["train"]["model_dir"], params_yaml["train"]["vectorizer_file"]
+            "/app",  # Ensure the base path is correct within the container
+            params_yaml["train"]["model_dir"],
+            params_yaml["train"]["vectorizer_file"],
         )
 
         self.model = joblib.load(model_path)

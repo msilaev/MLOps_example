@@ -23,8 +23,8 @@ stages:
     deps:
     - path: params.yaml
       hash: md5
-      md5: 6ed123e43f503cd827474d6e5c93e34e
-      size: 808
+      md5: 284c2b0fc11dd6bea1358fe781f4c43e
+      size: 807
       isexec: true
     - path: src/prepare_dataset.py
       hash: md5
@@ -38,88 +38,88 @@ stages:
       isexec: true
     params:
       params.yaml:
-        base.random_state: 44
+        base.random_state: 43
         data_source.local_path: data/data.csv
         split.split_ratio: 0.8
     outs:
     - path: data/processed/test_data.csv
       hash: md5
-      md5: 3807c551c935745ae0d101c644a7b4c5
-      size: 412653
+      md5: fc29b7f2899a351da7de842ff868063f
+      size: 865162
     - path: data/processed/total_data.csv
       hash: md5
-      md5: 7db0af388b405bd301edad0d83871de3
-      size: 4184509
+      md5: 11dc10bce352f44212304e7b2a1bf391
+      size: 8402484
     - path: data/processed/train_data.csv
       hash: md5
-      md5: ea0328d145052c0ba9256ae2d76a6aba
-      size: 3342357
+      md5: 923d7eb11037f3c3c8a2d3f1b3d6fef5
+      size: 6688497
     - path: data/processed/val_data.csv
       hash: md5
-      md5: ae5148bbb4818af99734a58482840a28
-      size: 429527
+      md5: 7c37a1007815aa4ff57ca8acf67d437f
+      size: 848853
   train:
     cmd: python src/train.py params.yaml
     deps:
     - path: data/processed
       hash: md5
-      md5: 0130362e0ee4fc681747d869ddffd484.dir
-      size: 8369046
+      md5: 30f3a4b6e1d46c125ad14809ac7e473f.dir
+      size: 16804996
       nfiles: 4
     - path: src/train.py
       hash: md5
-      md5: 78268a76ba7b472726709425b55cb3ad
-      size: 5587
+      md5: 480412cf63a09d12ebda2a86d5f5be70
+      size: 5585
       isexec: true
     params:
       params.yaml:
-        base.random_state: 44
+        base.random_state: 43
         base.target_col: target
         train.model_dir: models
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: da21360a2abb53a032c54762ead5d7b9
-      size: 8634683
+      md5: 311d06671dc019e38cb0e0dfbaae7f86
+      size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 7e7e4cef31784220bf08e1b887146ecc
-      size: 26572354
+      md5: 04dc62fcba2662541e047d90a3bacef5
+      size: 51380588
   predict:
     cmd: python src/predict.py params.yaml
     deps:
     - path: models/model.joblib
       hash: md5
-      md5: da21360a2abb53a032c54762ead5d7b9
-      size: 8634683
+      md5: 311d06671dc019e38cb0e0dfbaae7f86
+      size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 7e7e4cef31784220bf08e1b887146ecc
-      size: 26572354
+      md5: 04dc62fcba2662541e047d90a3bacef5
+      size: 51380588
     - path: src/predict.py
       hash: md5
-      md5: 0b7fba32e758506db07a01bbdc4465f6
-      size: 3032
+      md5: b3e59350a4fccdfd4c3f10f65d4e1c3a
+      size: 3564
       isexec: true
   evaluate:
     cmd: python src/evaluate.py params.yaml
     deps:
     - path: data/processed/test_data.csv
       hash: md5
-      md5: 3807c551c935745ae0d101c644a7b4c5
-      size: 412653
+      md5: fc29b7f2899a351da7de842ff868063f
+      size: 865162
     - path: models/model.joblib
       hash: md5
-      md5: da21360a2abb53a032c54762ead5d7b9
-      size: 8634683
+      md5: 311d06671dc019e38cb0e0dfbaae7f86
+      size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 7e7e4cef31784220bf08e1b887146ecc
-      size: 26572354
+      md5: 04dc62fcba2662541e047d90a3bacef5
+      size: 51380588
     - path: params.yaml
       hash: md5
-      md5: 6ed123e43f503cd827474d6e5c93e34e
-      size: 808
+      md5: 284c2b0fc11dd6bea1358fe781f4c43e
+      size: 807
       isexec: true
     - path: src/evaluate.py
       hash: md5
@@ -129,17 +129,17 @@ stages:
     outs:
     - path: eval/live/metrics.json
       hash: md5
-      md5: 635015e5fe8d3f6f62c5500540363ed7
-      size: 122
+      md5: 90337e7385b468ca6a954c70e9326851
+      size: 121
     - path: eval/live/plots
       hash: md5
-      md5: d5dd1f337241927bc35fabc8a3d2d8dd.dir
-      size: 30855
+      md5: 928043c3ce226e4e6dca7850d0573369.dir
+      size: 61342
       nfiles: 2
     - path: eval/prc
       hash: md5
-      md5: 8b6b4d6bf14b72a7921f325f0428e3fb.dir
-      size: 420
+      md5: 3ad52ab8384bb1b9ab3418ae98ee9234.dir
+      size: 2363
       nfiles: 1
   register_model:
     cmd: python src/register_model.py params.yaml

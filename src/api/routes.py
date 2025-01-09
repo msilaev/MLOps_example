@@ -42,6 +42,8 @@ def run_dvc_pipeline():
         ["dvc", "repro"], cwd=dvc_repo_path, capture_output=True, text=True
     )
 
+    print(result)
+
     if result.returncode == 0:
         return redirect(url_for("dvc_report"))
 

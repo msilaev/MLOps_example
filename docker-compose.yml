@@ -76,8 +76,10 @@ services:
       - .:/app
       - mlflow_data:/mlflow  # Mount the same volume as mlflow service
     restart: unless-stopped
+    #command: >
+    #  sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
     command: >
-      sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
+      sh -c "dvc pull -r myremote --force && tail -f /dev/null"
     depends_on:
       mlflow:
         condition: service_started  # Ensure MLflow is healthy before starting Flask
