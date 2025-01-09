@@ -63,19 +63,19 @@ jobs:
 
       - name: Run DVC pipeline
         run: |
-          docker-compose exec dvc dvc repro
+          docker-compose exec -T dvc dvc repro
 
       - name: Run tests
         run: |
-          docker-compose exec flask pytest
+          docker-compose exec -T flask pytest
 
       - name: Run flake8 linter
         run: |
-          docker-compose exec flask flake8 .
+          docker-compose exec -T flask flake8 .
 
       - name: Run black linter
         run: |
-          docker-compose exec flask black . --check
+          docker-compose exec -T flask black . --check
 
       - name: Stop Docker Compose
         run: |
