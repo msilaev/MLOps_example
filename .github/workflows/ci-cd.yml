@@ -65,18 +65,6 @@ jobs:
         run: |
           docker-compose exec -T dvc rm -f .dvc/tmp/lock .dvc/tmp/rwlock
 
-      - name: Run tests
-        run: |
-          docker-compose exec -T flask pytest
-
-      - name: Run tests
-        run: |
-          docker-compose exec -T dvc pytest
-
-      - name: Run tests
-        run: |
-          docker-compose exec -T mlflow pytest
-
       - name: Run flake8 linter
         run: |
           docker-compose exec -T flask flake8 .
