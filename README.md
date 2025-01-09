@@ -2,9 +2,9 @@
 
 ## Project Description
 
-This project is a sentiment analysis application that uses machine learning to classify text data into positive or negative sentiments. The project is built using Python and leverages various tools and frameworks such as Flask, DVC, MLflow, Docker, and GitHub Actions for CI/CD. Project created with MLOps-Template cookiecutter. For more info: https://mlopsstudygroup.github.io/mlops-guide/. For DVC remote repository AWS S3 bucket is used as a primary option. It can be changed to the local remote for developing purposes.
+This project is a sentiment analysis application that uses machine learning to classify text data into positive or negative sentiments. The project uses Python and leverages various tools and frameworks such as Flask, DVC, MLflow, Docker, and GitHub Actions for CI/CD. Project created with MLOps-Template cookiecutter. For more info: https://mlopsstudygroup.github.io/mlops-guide/. For the DVC remote repository, the AWS S3 bucket is used as a primary option. It can be changed to the local remote for developing purposes.
 
-Besides DVC repository models and artifacts such as tokens vectorizers are registered in MLflow backend. By using Mlops app different models can be chosen to be used in REST API to analyse user data.
+Besides DVC repository models and artifacts such as tokens vectorizers are registered in MLflow backend. Using the Mlops app different models can be chosen to be used in REST API to analyze user data.
 
 
 
@@ -65,33 +65,21 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
 ```
 
-3. **Install dependencies:**
-
-```sh
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-4. **Configure DVC remote:**
-
-```sh
-dvc remote add -d myremote s3://example1917/dvc_remote
-dvc remote modify myremote access_key_id $AWS_ACCESS_KEY_ID
-dvc remote modify myremote secret_access_key $AWS_SECRET_ACCESS_KEY
-```
-
-### Running the Application
-
-1. **Build and run Docker Compose:**
+3. **Build and run Docker Compose:**
 
 ```sh
 docker build -f Dockerfile_base -t base_image:latest .
 docker-compose up --build -d
 ```
+### Running Application
+1. **Access the Flask application:**
 
-2. **Access the Flask application:**
+Open your browser and navigate to `http://localhost:5001`. First, it will suggest running the DVC pipeline. 
+If this is successful the form for user text sentiment analysis opens. 
 
-Open your browser and navigate to `http://localhost:5001`.
+2. **Access the MLflow application:**
+
+Open your browser and navigate to `http://localhost:5000`.
 
 ### Running Tests
 
