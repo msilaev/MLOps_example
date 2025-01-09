@@ -61,14 +61,6 @@ jobs:
         run: |
           docker-compose up --build -d
 
-      - name: Wait for mlflow_server to be healthy
-        run: |
-          while ! docker-compose exec mlflow_server curl -f http://localhost:5000/health; do sleep 10; done
-
-      - name: Run DVC pipeline
-        run: |
-          docker-compose exec dvc_service dvc repro
-
       - name: Run tests
         run: |
           docker-compose exec flask_app pytest
