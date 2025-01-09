@@ -76,6 +76,9 @@ services:
       - mlflow_data:/mlflow  # Mount the same volume as mlflow service
     command: >
       sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
+    depends_on:
+      mlflow:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "dvc version || exit 1"]
       interval: 30s
