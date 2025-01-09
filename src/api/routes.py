@@ -45,7 +45,7 @@ def run_dvc_pipeline():
     if result.returncode == 0:
         return redirect(url_for("dvc_report"))
 
-    return render_template("start.html")
+    return render_template("dvc_pipeline.html")
 
 
 #########################################

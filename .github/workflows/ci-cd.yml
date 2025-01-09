@@ -59,7 +59,7 @@ jobs:
 
       - name: Build and run Docker Compose
         run: |
-          docker-compose up --build
+          docker-compose up --build -d
 
       - name: Wait for mlflow_server to be healthy
         run: |
