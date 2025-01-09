@@ -59,7 +59,11 @@ jobs:
 
       - name: Build and run Docker Compose
         run: |
-          docker-compose up --build -d
+          docker-compose up --build
+
+      - name: Wait for mlflow_server to be healthy
+        run: |
+          while ! docker-compose exec mlflow_server curl -f http://localhost:5000/health; do sleep 10; done
 
       - name: Run DVC pipeline
         run: |
