@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
 
@@ -15,6 +15,7 @@ services:
     volumes:
       - .:/app
       - mlflow_data:/mlflow  # Mount the same volume as mlflow service
+    restart: unless-stopped
     ports:
       - "5001:5001"  # Expose Flask app on port 5001
     depends_on:
@@ -39,7 +40,7 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow_server:5000
     volumes:
       - mlflow_data:/mlflow  # Persist MLflow data
-    restart: always  # Automatically restart MLflow if it stops
+    restart: unless-stopped  # Automatically restart MLflow if it stops
     command: >
       mlflow server
       --backend-store-uri sqlite:///mlflow/mlflow.db
@@ -74,6 +75,7 @@ services:
     volumes:
       - .:/app
       - mlflow_data:/mlflow  # Mount the same volume as mlflow service
+    restart: unless-stopped
     command: >
       sh -c "dvc pull -r myremote --force && dvc repro && dvc push -r myremote && tail -f /dev/null"
     depends_on:
