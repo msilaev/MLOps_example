@@ -51,6 +51,40 @@ jobs:
           dvc remote modify myremote access_key_id $AWS_ACCESS_KEY_ID
           dvc remote modify myremote secret_access_key $AWS_SECRET_ACCESS_KEY
 
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose up --build -d
+
+      - name: Clean up DVC lock files
+        run: |
+          docker-compose exec -T dvc rm -f .dvc/tmp/lock .dvc/tmp/rwlock
+
+      - name: Run flake8 linter
+        run: |
+          docker-compose exec -T flask flake8 .
+
+      - name: Run flake8 linter
+        run: |
+          docker-compose exec -T dvc flake8 .
+
+      - name: Run black linter
+        run: |
+          docker-compose exec -T flask black . --check
+
+      - name: Run black linter
+        run: |
+          docker-compose exec -T dvc black . --check
+
+      - name: Stop Docker Compose
+        run: |
+          docker-compose down
+
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'

@@ -68,8 +68,8 @@ stages:
       nfiles: 4
     - path: src/train.py
       hash: md5
-      md5: 480412cf63a09d12ebda2a86d5f5be70
-      size: 5585
+      md5: 78268a76ba7b472726709425b55cb3ad
+      size: 5587
       isexec: true
     params:
       params.yaml:
@@ -83,7 +83,7 @@ stages:
       size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 04dc62fcba2662541e047d90a3bacef5
+      md5: 7881ab2fb36547186f55989bff95cc64
       size: 51380588
   predict:
     cmd: python src/predict.py params.yaml
@@ -94,11 +94,11 @@ stages:
       size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 04dc62fcba2662541e047d90a3bacef5
+      md5: 7881ab2fb36547186f55989bff95cc64
       size: 51380588
     - path: src/predict.py
       hash: md5
-      md5: b3e59350a4fccdfd4c3f10f65d4e1c3a
+      md5: e35f1ecd701f8feeea9335b31cce268a
       size: 3564
       isexec: true
   evaluate:
@@ -114,7 +114,7 @@ stages:
       size: 16476715
     - path: models/vectorizer.joblib
       hash: md5
-      md5: 04dc62fcba2662541e047d90a3bacef5
+      md5: 7881ab2fb36547186f55989bff95cc64
       size: 51380588
     - path: params.yaml
       hash: md5

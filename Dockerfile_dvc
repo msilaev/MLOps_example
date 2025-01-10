@@ -42,5 +42,5 @@ RUN dvc remote modify myremote secret_access_key ${AWS_SECRET_ACCESS_KEY}
 
 #RUN dvc pull -r myremote --force
 
-# Command to keep the container running
-CMD ["tail", "-f", "/dev/null"]
+# Command to run DVC
+CMD ["sh", "-c", "dvc pull -r myremote --force && tail -f /dev/null"]

@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile_flask
     container_name: flask_app
+    image: msilaev/flask_app
     environment:
       FLASK_APP: src/api/app.py
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -32,6 +33,7 @@ services:
     ports:
       - "5000:5000"
     container_name: mlflow_server
+    image: msilaev/mlflow_server
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -68,6 +70,7 @@ services:
         AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
         AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     container_name: dvc_service
+    image: msilaev/dvc_service
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
