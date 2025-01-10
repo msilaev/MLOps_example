@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write # Reequired for requesting the jwt token
+  contents: read
+
 jobs:
   integration:
     runs-on: ubuntu-latest
