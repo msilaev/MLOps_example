@@ -92,6 +92,13 @@ jobs:
         with:
           region: eu-north-1
 
+      - name: Create ECR Repositories if they do not exist
+        run: |
+          aws ecr describe-repositories --repository-names dvc_service || aws ecr create-repository --repository-name dvc_service --region eu-north-1
+          aws ecr describe-repositories --repository-names flask_app || aws ecr create-repository --repository-name flask_app --region eu-north-1
+          aws ecr describe-repositories --repository-names mlflow_server || aws ecr create-repository --repository-name mlflow_server --region eu-north-1
+
+
       - name: Build base image
         run: |
           docker build -f Dockerfile_base -t base_image:latest .
