@@ -149,6 +149,12 @@ jobs:
           role-session-name: Github
           aws-region: eu-north-1
 
+      - name: Create Lightsail Container Services if they do not exist
+        run: |
+          aws lightsail get-container-services --service-name dvc_service || aws lightsail create-container-service --service-name dvc_service --power small --scale 1 --region eu-north-1
+          aws lightsail get-container-services --service-name flask_app || aws lightsail create-container-service --service-name flask_app --power small --scale 1 --region eu-north-1
+          aws lightsail get-container-services --service-name mlflow_server || aws lightsail create-container-service --service-name mlflow_server --power small --scale 1 --region eu-north-1
+
       - name: Push the Docker Images to lightsail
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
