@@ -55,6 +55,9 @@ jobs:
           dvc remote modify myremote access_key_id $AWS_ACCESS_KEY_ID
           dvc remote modify myremote secret_access_key $AWS_SECRET_ACCESS_KEY
 
+
+
+
   build:
     runs-on: ubuntu-latest
     needs: integration
@@ -65,7 +68,7 @@ jobs:
 
       - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname-m)" -o /usr/local/bin/docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
