@@ -52,8 +52,12 @@ jobs:
           dvc remote modify myremote access_key_id $AWS_ACCESS_KEY_ID
           dvc remote modify myremote secret_access_key $AWS_SECRET_ACCESS_KEY
 
+
+
+
   build:
     runs-on: ubuntu-latest
+    needs: integration
 
     steps:
       - name: Checkout code
@@ -65,7 +69,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: Upgrade AWS CLI version
+      - name: Upgrade AWS CLI version and setup lightsailctl
         run: |
           aws --version
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -73,6 +77,8 @@ jobs:
           sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
           which aws
           aws --version
+          sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+          sudo chmod +x /usr/local/bin/lightsailctl
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -126,7 +132,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Upgrade AWS CLI version
+      - name: Upgrade AWS CLI version and setup lightsailctl
         run: |
           aws --version
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -134,6 +140,8 @@ jobs:
           sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
           which aws
           aws --version
+          sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+          sudo chmod +x /usr/local/bin/lightsailctl
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -142,20 +150,44 @@ jobs:
           role-session-name: Github
           aws-region: eu-north-1
 
-      - name: Deploy to EC2
+      - name: Create Lightsail Container Services if they do not exist
+        run: |
+          aws lightsail get-container-services --service-name dvc-service || aws lightsail create-container-service --service-name dvc-service --power small --scale 1 --region eu-north-1
+          aws lightsail get-container-services --service-name flask-app || aws lightsail create-container-service --service-name flask-app --power small --scale 1 --region eu-north-1
+          aws lightsail get-container-services --service-name mlflow-server || aws lightsail create-container-service --service-name mlflow-server --power small --scale 1 --region eu-north-1
+
+      - name: Push the Docker Images to lightsail
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_SHA_TAG: ${{ github.sha }}
-          EC2_USER: ec2-user
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_KEY: ${{ secrets.EC2_KEY }}
         run: |
-          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
-          chmod 400 ec2-key.pem
-          scp -i ec2-key.pem docker-compose.yml $EC2_USER@$EC2_HOST:~/docker-compose.yml
-          ssh -i ec2-key.pem $EC2_USER@$EC2_HOST << 'EOF'
-            export ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-            export IMAGE_SHA_TAG=${{ github.sha }}
-            docker-compose -f docker-compose.yml pull
-            docker-compose -f docker-compose.yml up -d
-          EOF
+          aws lightsail push-container-image \
+          --service-name dvc-service \
+          --image $ECR_REGISTRY/dvc-service:${{ github.sha }} \
+          --region eu-north-1 \
+          --label git-push
+          aws lightsail push-container-image \
+          --service-name flask-app \
+          --image $ECR_REGISTRY/flask-app:${{ github.sha }} \
+          --region eu-north-1 \
+          --label git-push
+          aws lightsail push-container-image \
+          --service-name mlflow-server \
+          --image $ECR_REGISTRY/mlflow-server:${{ github.sha }} \
+          --region eu-north-1 \
+          --label git-push
+
+      - name: Create Lightsail Container Service Deployment
+        run: |
+          aws lightsail create-container-service-deployment \
+          --service-name dvc-service \
+          --containers "dvc-service=$ECR_REGISTRY/dvc-service:${{ github.sha }}" \
+          --public-endpoint "containerName=dvc-service,containerPort=80,healthCheckPath=/"
+          aws lightsail create-container-service-deployment \
+          --service-name flask-app \
+          --containers "flask-app=$ECR_REGISTRY/flask-app:${{ github.sha }}" \
+          --public-endpoint "containerName=flask-app,containerPort=5001,healthCheckPath=/"
+          aws lightsail create-container-service-deployment \
+          --service-name mlflow-server \
+          --containers "mlflow-server=$ECR_REGISTRY/mlflow-server:${{ github.sha }}" \
+          --public-endpoint "containerName=mlflow-server,containerPort=5000,healthCheckPath=/"

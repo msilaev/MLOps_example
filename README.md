@@ -108,115 +108,52 @@ ci-cd.yml
 
 .
 
-### CI/CD Pipeline
+# Sentiment Analysis Project
 
-The CI/CD pipeline includes the following steps:
+This project uses a CI/CD pipeline to automate the build, test, and deployment processes using GitHub Actions, Docker, and AWS.
 
-1. **Checkout code:**
+## CI/CD Pipeline
 
-```yaml
-- name: Checkout code
-  uses: actions/checkout@v2
-```
+The CI/CD pipeline is defined in `.github/workflows/ci-cd.yml` and includes the following steps:
 
-2. **Set up Python:**
+1. **Set up Python**: Installs Python 3.11.
+2. **Install dependencies**: Upgrades pip and installs required packages from `requirements.txt`.
+3. **Configure DVC remote**: Sets up DVC remote storage on S3.
+4. **Build and push Docker images**: Builds Docker images using `docker-compose` and pushes them to Amazon ECR.
+5. **Deploy to EC2**: Deploys the Docker images to an EC2 instance.
 
-```yaml
-- name: Set up Python
-  uses: actions/setup-python@v2
-  with:
-    python-version: 3.11
-```
+## Deployment
 
-3. **Install dependencies:**
+The deployment process involves:
 
-```yaml
-- name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install flake8 black
-```
+1. **Retrieving EC2 Public IP**: Uses AWS CLI to get the public IP of the EC2 instance.
+2. **Configuring Security Group**: Ensures the security group allows traffic on necessary ports.
+3. **Deploying to EC2**: Uses SSH to connect to the EC2 instance and deploy the Docker images.
 
-4. **Configure DVC remote:**
+## Usage
 
-```yaml
-- name: Configure DVC remote
-  run: |
-    dvc remote add -d myremote s3://example1917/dvc_remote
-    dvc remote modify myremote access_key_id $AWS_ACCESS_KEY_ID
-    dvc remote modify myremote secret_access_key $AWS_SECRET_ACCESS_KEY
-```
+To trigger the CI/CD pipeline, push changes to the `main` branch or create a pull request targeting the `main` branch.
 
-5. **Install Docker Compose:**
+## Requirements
 
-```yaml
-- name: Install Docker Compose
-  run: |
-    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-    docker-compose --version
-```
+- AWS credentials with appropriate permissions.
+- An EC2 instance with Docker and Docker Compose installed.
+- An S3 bucket for DVC remote storage.
 
-6. **Build and run Docker Compose:**
+## Environment Variables
 
-```yaml
-- name: Build and run Docker Compose
-  run: |
-    docker-compose up --build -d
-```
+Ensure the following secrets are set in your GitHub repository:
 
-7. **Clean up DVC lock files:**
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_ARN_OICN_ACCESS`
+- `EC2_KEY`
+- `EC2_HOST`
 
-```yaml
-- name: Clean up DVC lock files
-  run: |
-    docker-compose exec -T dvc_service rm -f .dvc/tmp/lock .dvc/tmp/rwlock
-```
 
-8. **Run DVC pipeline:**
+## License
 
-```yaml
-- name: Run DVC pipeline
-  run: |
-    docker-compose exec -T dvc_service dvc repro
-```
-
-9. **Run tests:**
-
-```yaml
-- name: Run tests for flask
-  run: |
-    docker-compose exec -T flask_app pytest src/tests
-
-- name: Run tests for dvc_service
-  run: |
-    docker-compose exec -T dvc_service pytest src/tests
-
-- name: Run tests for mlflow_server
-  run: |
-    docker-compose exec -T mlflow_server pytest src/tests
-```
-
-10. **Run linters:**
-
-```yaml
-- name: Run flake8 linter
-  run: |
-    docker-compose exec -T flask_app flake8 .
-
-- name: Run black linter
-  run: |
-    docker-compose exec -T flask_app black . --check
-```
-
-11. **Stop Docker Compose:**
-
-```yaml
-- name: Stop Docker Compose
-  run: |
-    docker-compose down
-```
+This project is licensed under the MIT License.
 
 
 ## Acknowledgements
