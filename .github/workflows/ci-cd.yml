@@ -45,9 +45,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build base image
-        run: |
-          docker build -f Dockerfile_base -t base_image:latest .
 
       - name: Configure DVC remote
         run: |
@@ -101,6 +98,10 @@ jobs:
           aws ecr describe-repositories --repository-names dvc-service || aws ecr create-repository --repository-name dvc-service --region eu-north-1
           aws ecr describe-repositories --repository-names flask-app || aws ecr create-repository --repository-name flask-app --region eu-north-1
           aws ecr describe-repositories --repository-names mlflow-server || aws ecr create-repository --repository-name mlflow-server --region eu-north-1
+
+      - name: Build base image
+        run: |
+          docker build -f Dockerfile_base -t base_image:latest .
 
       - name: Build and Push Docker Images with docker-compose
         env:
