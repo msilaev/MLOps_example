@@ -2,11 +2,12 @@
 
 ## Project Description
 
-This project is a sentiment analysis application that uses machine learning to classify text data into positive or negative sentiments. The project uses Python and leverages various tools and frameworks such as Flask, DVC, MLflow, Docker, and GitHub Actions for CI/CD. Project created with MLOps-Template cookiecutter. For more info: https://mlopsstudygroup.github.io/mlops-guide/. For the DVC remote repository, the AWS S3 bucket is used as a primary option. It can be changed to the local remote for developing purposes.
+This project is a sentiment analysis application that uses machine learning to classify text data into positive or negative sentiments. The project uses Python and leverages various tools and frameworks such as Flask, DVC, MLflow, Docker, and GitHub Actions for CI/CD. Project created with MLOps-Template cookiecutter. For more info, see the [MLOps Guide](https://mlopsstudygroup.github.io/mlops-guide/).
+ For the DVC remote repository, the AWS S3 bucket is used as a primary option. It can be changed to the local remote for developing purposes.
 
 Besides DVC repository models and artifacts such as tokens vectorizers are registered in MLflow backend. Using the Mlops app different models can be chosen to be used in REST API to analyze user data.
 
-
+Classifier is trained on IMDB Dataset of 50K Movie Reviews from [Kaggle] (https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
 
 
 ## Project Structure
@@ -74,8 +75,8 @@ docker-compose up --build -d
 ### Running Application
 1. **Access the Flask application:**
 
-Open your browser and navigate to `http://localhost:5001`. First, it will suggest running the DVC pipeline. 
-If this is successful the form for user text sentiment analysis opens. 
+Open your browser and navigate to `http://localhost:5001`. First, it will suggest running the DVC pipeline.
+If this is successful the form for user text sentiment analysis opens.
 
 2. **Access the MLflow application:**
 
