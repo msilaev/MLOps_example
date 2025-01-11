@@ -92,6 +92,10 @@ jobs:
         with:
           region: eu-north-1
 
+      - name: Build base image
+        run: |
+          docker build -f Dockerfile_base -t base_image:latest .
+
       - name: Build and Push Docker Images with docker-compose
         env:
           IMAGE_TAG: latest
