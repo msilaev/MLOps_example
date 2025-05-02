@@ -22,21 +22,11 @@ sentiment_analysis/
 ├── Dockerfile_flask
 ├── Dockerfile_dvc
 ├── Dockerfile_mlflow
-├──
-
-requirements.txt
-
-
-├──
-
-docker-compose.yml
-
-
+├──requirements.txt
+├──docker-compose.yml
 └── .github/
     └── workflows/
-        └──
-
-ci-cd.yml
+        └──ci-cd.yml
 
 
 ```
@@ -102,18 +92,7 @@ docker-compose exec -T dvc_service black . --check
 
 ### CI/CD with GitHub Actions
 
-The project uses GitHub Actions for continuous integration and deployment. The CI/CD pipeline is defined in
-
-ci-cd.yml
-
-.
-
-# Sentiment Analysis Project
-
-This project uses a CI/CD pipeline to automate the build, test, and deployment processes using GitHub Actions, Docker, and AWS.
-
-## CI/CD Pipeline
-
+The project uses GitHub Actions for continuous integration and deployment. 
 The CI/CD pipeline is defined in `.github/workflows/ci-cd.yml` and includes the following steps:
 
 1. **Set up Python**: Installs Python 3.11.
@@ -122,15 +101,12 @@ The CI/CD pipeline is defined in `.github/workflows/ci-cd.yml` and includes the 
 4. **Build and push Docker images**: Builds Docker images using `docker-compose` and pushes them to Amazon ECR.
 5. **Deploy to EC2**: Deploys the Docker images to an EC2 instance.
 
-## Deployment
-
 The deployment process involves:
 
 1. **Retrieving EC2 Public IP**: Uses AWS CLI to get the public IP of the EC2 instance.
 2. **Configuring Security Group**: Ensures the security group allows traffic on necessary ports.
 3. **Deploying to EC2**: Uses SSH to connect to the EC2 instance and deploy the Docker images.
 
-## Usage
 
 To trigger the CI/CD pipeline, push changes to the `main` branch or create a pull request targeting the `main` branch.
 
